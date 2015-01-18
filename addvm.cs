@@ -94,7 +94,7 @@ public class addvm : Form
         this.OS_box.DropDownStyle = ComboBoxStyle.DropDownList;
         this.OS_box.Items.Add("Ubuntu10.04");
         this.OS_box.Items.Add("Windows7");
-        this.OS_box.Items.Add("其他");
+        //this.OS_box.Items.Add("其他");
         this.OS_box.SelectedItem = "Ubuntu10.04";
         this.OS_box.SelectedIndexChanged += new EventHandler(OS_box_SelectedIndexChanged);
 
@@ -132,15 +132,15 @@ public class addvm : Form
         this.Controls.Add(memory);
         this.Controls.Add(RAM);
         this.Controls.Add(OS);
-        this.Controls.Add(iso);
+        //this.Controls.Add(iso);
         this.Controls.Add(name_box);
         this.Controls.Add(Install_box);
         this.Controls.Add(memory_box);
         this.Controls.Add(RAM_box);
         this.Controls.Add(MB);
         this.Controls.Add(OS_box);
-        this.Controls.Add(iso_box);
-        this.Controls.Add(upload);
+        //this.Controls.Add(iso_box);
+        //this.Controls.Add(upload);
         this.Controls.Add(G);
         this.Controls.Add(back);
         this.Controls.Add(OK);
@@ -189,7 +189,7 @@ public class addvm : Form
             ram_size = Convert.ToString(ram_count);
             //modify
             OK_exe.StartInfo.Arguments = user_name + " " + name_box.Text + " " + memory_box.Text + " " + ram_size + " ";
-            MessageBox.Show(OK_exe.StartInfo.Arguments);
+            //MessageBox.Show(OK_exe.StartInfo.Arguments);
             if (OS_box.SelectedItem.ToString() == "Ubuntu10.04")
                 OK_exe.StartInfo.Arguments += "u";
             else if (OS_box.SelectedItem.ToString() == "Windows7")
@@ -211,7 +211,7 @@ public class addvm : Form
         OK_exe.Start();
         OK_exe.WaitForExit();
 
-        MessageBox.Show("done");
+        
 
         String file = currentDir + "createVM_c.txt";
         StreamReader ret = new StreamReader(file);// ("D:\\Google 雲端硬碟\\專題\\client\\client\\client\\bin\\Debug\\createVM_c.txt");
@@ -220,6 +220,7 @@ public class addvm : Form
 
         if (success == "1")
         {
+            MessageBox.Show("創建成功");
             refresh = new Process();
             refresh.StartInfo.FileName = currentDir + "VM\\sign.exe";// "D:\\Google 雲端硬碟\\專題\\client\\VM\\sign.exe";
             refresh.StartInfo.Arguments = user_name+" "+user_pwd;
@@ -232,7 +233,7 @@ public class addvm : Form
             openvm_exe = new Process();
             openvm_exe.StartInfo.FileName = currentDir + "VM\\openVM.exe";// "D:\\Google 雲端硬碟\\專題\\client\\VM\\openVM";
             openvm_exe.StartInfo.Arguments = user_name + " " + name_box.Text + " open";
-            MessageBox.Show(openvm_exe.StartInfo.Arguments);
+            //MessageBox.Show(openvm_exe.StartInfo.Arguments);
 
             openvm_exe.StartInfo.CreateNoWindow = true;
             openvm_exe.StartInfo.UseShellExecute = false;
