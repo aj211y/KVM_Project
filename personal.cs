@@ -9,14 +9,15 @@ public class personal_Form : Form
     private Pen pen;
     private Graphics pic;
     private Button user, modify, logout,addvm,closevm, rmvm,recover_vm,order,openvm,clonevm,test_w7,test_u;
-    private Label time;
+    private Label time, vm_state, vm_state_text, clone_msg;
     private Timer timer;
     private ListBox display_box;
     private TextBox choose_box,clone_box;
-    private Process addvm_exe, openvm_exe, open_windows,clone_exe, clone_check_exe,order_exe,remove_exe,test_exe,sign_exe;
+    private Process addvm_exe, openvm_exe, open_windows,clone_exe, clone_check_exe,order_exe,remove_exe,test_exe,sign_exe,checkState_exe;
     private Boolean loss;
     private string user_name, clone_name, isFinish,pwd;
     private String currentDir;
+
     public personal_Form()
     {
         this.Size = new Size(450, 600);
@@ -34,10 +35,24 @@ public class personal_Form : Form
 
         this.user = new Button();
         this.user.Location=new Point(0,0);
-        this.user.Text = "使用者";
+        //this.user.Text = "使用者";
+        this.user.Text = user_name;
         this.user.Size = new Size(80, 38);
         this.user.FlatAppearance.BorderSize = 0;
         this.user.FlatStyle = FlatStyle.Flat;
+
+        /*狀態顯示*/
+        this.vm_state = new Label();
+        this.vm_state.Text = "虛擬機狀態： ";
+        this.vm_state.Location = new Point(250, 90);
+
+        this.vm_state_text = new Label();
+        this.vm_state_text.Text = "";
+        this.vm_state_text.Location = new Point(350, 90);
+
+        this.clone_msg = new Label();
+        this.clone_msg.Text = "";
+        this.clone_msg.Location = new Point(100,530);
 
         this.modify = new Button();
         this.modify.Location = new Point(300, 0);
@@ -55,65 +70,64 @@ public class personal_Form : Form
         this.logout.Click += new EventHandler(logout_Click);
 
         this.addvm = new Button();
-        this.addvm.Location = new Point(250,100);
+        this.addvm.Location = new Point(250,110);
         this.addvm.Text = "新增虛擬機器";
         this.addvm.Size = new Size(170,40);
         this.addvm.Click += new EventHandler(addvm_Click);
 
         this.clone_box = new TextBox();
-        this.clone_box.Location = new Point(250,160);
+        this.clone_box.Location = new Point(250,170);
         this.clone_box.Text = "1";
         this.clone_box.TextChanged += new EventHandler(clone_box_TextChanged);
         this.clone_box.TextAlign=HorizontalAlignment.Right;
         this.clone_box.Size = new Size(30,40);
 
         this.clonevm = new Button();
-        this.clonevm.Location = new Point(290,150);
+        this.clonevm.Location = new Point(290,160);
         this.clonevm.Text = "複製虛擬機器";
         this.clonevm.Size = new Size(130, 40);
         this.clonevm.Click += new EventHandler(clonevm_Click);
 
         this.openvm = new Button();
-        this.openvm.Location = new Point(250,200);
+        this.openvm.Location = new Point(250,210);
         this.openvm.Text = "開啟虛擬機器";
         this.openvm.Size = new Size(170, 40);
         this.openvm.Click += new EventHandler(openvm_Click);
 
         this.closevm = new Button();
-        this.closevm.Location = new Point(250, 250);
+        this.closevm.Location = new Point(250, 260);
         this.closevm.Text = "關閉虛擬機器";
         this.closevm.Size = new Size(170, 40);
         this.closevm.Click += new EventHandler(closevm_Click);
-
+        
         this.rmvm = new Button();
-        this.rmvm.Location = new Point(250,300);
+        this.rmvm.Location = new Point(250,310);
         this.rmvm.Text = "移除虛擬機器";
         this.rmvm.Size = new Size(170, 40);
         this.rmvm.Click += new EventHandler(rmvm_Click);
 
         this.recover_vm = new Button();
-        this.recover_vm.Location = new Point(250, 350);
+        this.recover_vm.Location = new Point(250, 400);
         this.recover_vm.Text = "復原虛擬機器";
         this.recover_vm.Size = new Size(170, 40);
 
         this.order = new Button();
-        this.order.Location = new Point(250, 350);
+        this.order.Location = new Point(250, 360);
         this.order.Text = "定時虛擬機器";
         this.order.Size = new Size(170, 40);
         this.order.Click += new EventHandler(order_Click);
 
         this.test_w7 = new Button();
-        this.test_w7.Location = new Point(250,400);
+        this.test_w7.Location = new Point(250,410);
         this.test_w7.Text = "Win7 測試機";
         this.test_w7.Size = new Size(170,40);
         this.test_w7.Click += new EventHandler(test_w7_Click);
 
         this.test_u = new Button();
-        this.test_u.Location = new Point(250, 450);
+        this.test_u.Location = new Point(250, 460);
         this.test_u.Text = "Ubuntu 測試機";
         this.test_u.Size = new Size(170, 40);
         this.test_u.Click += new EventHandler(test_u_Click);
-
 
         /*計時器*/
         this.time = new Label();
@@ -150,6 +164,9 @@ public class personal_Form : Form
         this.Controls.Add(logout);
         this.Controls.Add(time);
         this.Controls.Add(addvm);
+        this.Controls.Add(vm_state);
+        this.Controls.Add(vm_state_text);
+        this.Controls.Add(clone_msg);
         this.Controls.Add(clone_box);
         this.Controls.Add(clonevm);
         this.Controls.Add(openvm);
@@ -184,8 +201,11 @@ public class personal_Form : Form
     {
         if (choose_box.Text == "")
             MessageBox.Show("請選擇一台虛擬機器");
+        else if(vm_state_text.Text=="開啟")
+            MessageBox.Show("請先把虛擬機關閉");
         else
         {
+            clone_msg.Text = "Machine Cloning!";
             clone_exe = new Process();
             clone_exe.StartInfo.FileName = currentDir + "VM\\clone.exe";// "D:\\Google 雲端硬碟\\專題\\client\\VM\\clone";
             clone_exe.StartInfo.Arguments = user_name + " " + choose_box.Text;
@@ -222,9 +242,10 @@ public class personal_Form : Form
                     while (num > 0)
                         num = num - 1;
                 }
-                MessageBox.Show(i + 1 + " machine cloned");
+                //MessageBox.Show(i + 1 + " machine cloned");
             }
             this.Enabled = true;
+            clone_msg.Text = "";
         }
         sign_exe = new Process();
         sign_exe.StartInfo.FileName = currentDir + "VM\\sign.exe";// "D:\\Google 雲端硬碟\\專題\\client\\VM\\sign.exe";
@@ -240,16 +261,53 @@ public class personal_Form : Form
     void display_show()
     {
         string vmInfo;
+        bool firstVM=true,error=false;
         this.display_box.Items.Clear();
         String file = currentDir + "sign_c.txt";
-        StreamReader ret = new StreamReader(file);// ("D:\\Google 雲端硬碟\\專題\\client\\client\\client\\bin\\Debug\\sign_c.txt");
-        vmInfo = ret.ReadLine();
+        StreamReader ret = new StreamReader(file);
+        vmInfo = ret.ReadLine();//login success or not
         while (!ret.EndOfStream)
         {
             vmInfo = ret.ReadLine();
-            this.display_box.Items.Add(vmInfo);
+            if (firstVM && vmInfo == "1")
+            {
+                error = true;
+                break;
+            }
+            else
+                this.display_box.Items.Add(vmInfo);
         }
         ret.Close();
+        if (error)
+        {
+            //refresh
+            sign_exe = new Process();
+            sign_exe.StartInfo.FileName = currentDir + "VM\\sign.exe";// "D:\\Google 雲端硬碟\\專題\\client\\VM\\sign.exe";
+            sign_exe.StartInfo.Arguments = user_name + " " + pwd;
+            sign_exe.StartInfo.CreateNoWindow = true;
+            sign_exe.StartInfo.UseShellExecute = false;
+
+            while (true)
+            {
+                sign_exe.Start();
+                sign_exe.WaitForExit();
+
+                ret = new StreamReader(file);
+                vmInfo = ret.ReadLine();//login success or not
+                vmInfo = ret.ReadLine();//firstVM
+                ret.Close();
+                if (vmInfo != "1")
+                    break;
+            }
+            ret = new StreamReader(file);
+            vmInfo = ret.ReadLine();//login success or not
+            while (!ret.EndOfStream)
+            {
+                vmInfo = ret.ReadLine();
+                this.display_box.Items.Add(vmInfo);
+            }
+            ret.Close();
+        }
     }
     //定時vm
     void order_Click(object sender, EventArgs e)
@@ -338,7 +396,6 @@ public class personal_Form : Form
             remove_exe = new Process();
             remove_exe.StartInfo.FileName = currentDir + "VM\\removeVM.exe";// "D:\\Google 雲端硬碟\\專題\\client\\VM\\removeVM";
             remove_exe.StartInfo.Arguments = user_name +" "+choose_box.Text;
-            //MessageBox.Show(remove_exe.StartInfo.Arguments);
             remove_exe.StartInfo.CreateNoWindow = true;
             remove_exe.StartInfo.UseShellExecute = false;
             remove_exe.Start();
@@ -351,11 +408,42 @@ public class personal_Form : Form
     {
         if (loss)
         {
-            choose_box.Text="";
+            choose_box.Text = "";
             loss = false;
+            this.vm_state_text.Text = "";
         }
         else
+        {
             choose_box.Text = display_box.SelectedItem.ToString();
+            if (choose_box.Text != "")
+            {
+                checkState_exe = new Process();
+                checkState_exe.StartInfo.FileName = currentDir + "VM\\checkstat.exe";
+                checkState_exe.StartInfo.Arguments = user_name + " " + choose_box.Text;
+                checkState_exe.StartInfo.CreateNoWindow = true;
+                checkState_exe.StartInfo.UseShellExecute = false;
+                checkState_exe.Start();
+                checkState_exe.WaitForExit();
+
+                String file = currentDir + "openVM_c.txt";
+                String state,word;
+                StreamReader ret = new StreamReader(file);// ("D:\\Google 雲端硬碟\\專題\\client\\client\\client\\bin\\Debug\\test_c.txt");
+                state = ret.ReadLine();
+                ret.Close();
+                
+                if (state == "1")
+                    word = "開啟";
+                //                        vm_state_text.Text = new String("開啟");
+                else if (state == "0")
+                    word = "關閉";
+                //                      vm_state_text.Text = "關閉";
+                else
+                    word = "";
+                vm_state_text.Text = word;
+                
+            }
+            
+        }
     }
 
     void openvm_Click(object sender, EventArgs e)
@@ -380,7 +468,7 @@ public class personal_Form : Form
             MessageBox.Show("開啟失敗！");
         else
         {
-            //MessageBox.Show(port);
+            vm_state_text.Text = "開啟";
             argv += port;
             MessageBox.Show("請選vnc執行檔，填入 " + argv + " 並連線");
             open_windows = new Process();
@@ -400,6 +488,7 @@ public class personal_Form : Form
         openvm_exe.StartInfo.UseShellExecute = false;
         openvm_exe.Start();
         openvm_exe.WaitForExit();
+        vm_state_text.Text = "關閉";
     }
 
     void addvm_Click(object sender, EventArgs e)
@@ -411,12 +500,55 @@ public class personal_Form : Form
         this.Close();
     }
 
+    void closeAllvm()
+    {
+        String stateFile,state;
+        StreamReader stateRet;
+        string vmInfo;
+        String file = currentDir + "sign_c.txt";
+        StreamReader ret = new StreamReader(file);
+
+        vmInfo = ret.ReadLine();
+        checkState_exe = new Process();
+        checkState_exe.StartInfo.FileName = currentDir + "VM\\checkstat.exe";
+            
+        while (!ret.EndOfStream)
+        {
+            vmInfo = ret.ReadLine();
+
+            checkState_exe.StartInfo.Arguments = user_name + " " + vmInfo;
+            checkState_exe.StartInfo.CreateNoWindow = true;
+            checkState_exe.StartInfo.UseShellExecute = false;
+            checkState_exe.Start();
+            checkState_exe.WaitForExit();
+
+            stateFile = currentDir + "openVM_c.txt";
+            stateRet = new StreamReader(stateFile);
+            state = stateRet.ReadLine();
+            stateRet.Close();
+
+            if (state == "1")//open state and need to be closed
+            {
+                openvm_exe = new Process();
+                openvm_exe.StartInfo.FileName = currentDir + "VM\\openVM.exe";
+                openvm_exe.StartInfo.Arguments = user_name + " " + vmInfo + " close";
+                openvm_exe.StartInfo.CreateNoWindow = true;
+                openvm_exe.StartInfo.UseShellExecute = false;
+                openvm_exe.Start();
+                openvm_exe.WaitForExit();
+            }
+        }
+        ret.Close();
+    }
+
     void logout_Click(object sender, EventArgs e)
     {
         DialogResult dia_ret= MessageBox.Show("確定登出嗎？","登出確認中...",MessageBoxButtons.YesNo);
+        
         switch (dia_ret)
         {
             case DialogResult.Yes:
+                closeAllvm();
                 this.Close();
                 break;
             case DialogResult.No:
